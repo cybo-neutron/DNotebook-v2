@@ -12,10 +12,6 @@ class NoteController implements Controller{
     constructor() {
         this.initializeRoutes();
         this.notesService = new NotesService();
-        console.log("🚀 ~ file: note.controller.ts ~ line 15 ~ NoteController ~ constructor ~ NotesService", this.notesService)
-        
-        
-
     }
 
     private initializeRoutes() {
@@ -23,7 +19,6 @@ class NoteController implements Controller{
         this.router.post(`${this.path}/create`, this.create);
         //fetch all notes
         this.router.get(`${this.path}/`, this.fetchAllNotes);
-
 
     }
 
@@ -42,7 +37,6 @@ class NoteController implements Controller{
 
     private fetchAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
         try {
-
             const fetchedNotes = await this.notesService.fetchAllNotes();
             res.status(201).json(fetchedNotes);
         } catch (err: any)

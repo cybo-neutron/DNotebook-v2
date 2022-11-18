@@ -9,6 +9,7 @@ import Controller from './utils/interfaces/controller.interface';
 
 //controllers 
 import NoteController from './services/note/note.controller';
+import UserController from './services/user/user.controller';
 
 
 const app = express()
@@ -19,7 +20,7 @@ app.get('/', (req, res) => res.send('Hello World!'))
 
 initializeMiddlewares();
 initializeDBConnection();
-initializeControllers([new NoteController()]);
+initializeControllers([new NoteController(),new UserController()]);
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
 
@@ -38,7 +39,7 @@ function initializeMiddlewares() :void{
 function initializeDBConnection(): void{
 
     
-    mongoose.connect(`${process.env.MONGO_URL}`, (err) => {
+    mongoose.connect(`${process.env.MONGO_URL}`, {dbName:process.env.DB_NAME}, (err) => {
         if (err) {
             console.log("Erorr in connecting to DB");
             console.log(err);
