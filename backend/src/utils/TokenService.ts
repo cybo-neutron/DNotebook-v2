@@ -2,9 +2,10 @@ import { Token } from './interfaces/token.interface';
 import jwt from 'jsonwebtoken';
 import User from '../services/user/user.interface';
 import HttpException from './exceptions/http.exception';
+import TokenPayload from './types/TokenPayload';
 
-const createToken = (user:User): string =>{
-    return jwt.sign(user, process.env.JWT_SECRET as jwt.Secret,{expiresIn:'1d'});
+const createToken = (payload:TokenPayload): string =>{
+    return jwt.sign(payload, process.env.JWT_SECRET as jwt.Secret,{expiresIn:'1d'});
 }
 
 const verifyToken= (token: string): Token|jwt.VerifyErrors =>{
