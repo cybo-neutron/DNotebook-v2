@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
+import authenticateMiddleware from "../../middlewares/auth.middleware";
 import HttpException from "../../utils/exceptions/http.exception";
 import Controller from "../../utils/interfaces/controller.interface";
 import Note from "./note.interface";
@@ -16,9 +17,13 @@ class NoteController implements Controller{
 
     private initializeRoutes() {
         //Create note
-        this.router.post(`${this.path}/create`, this.create);
+        this.router.post(`${this.path}/create`,authenticateMiddleware, this.create);
         //fetch all notes
-        this.router.get(`${this.path}/`, this.fetchAllNotes);
+        this.router.get(`${this.path}/`, authenticateMiddleware, this.fetchAllNotes);
+        //delete a note
+        this.router.delete(`${this.path}/delete/:id`, authenticateMiddleware, this.delete);
+        //update a note
+        this.router.patch(`${this.path}/update/:id`, authenticateMiddleware, this.update);
 
     }
 
@@ -28,7 +33,7 @@ class NoteController implements Controller{
             const { title, description } = req.body;
             console.log("🚀 ~ file: note.controller.ts ~ line 29 ~ NoteController ~ create ~ req.body", req.body)
             
-            const createdNote = await this.notesService.create({ title, description } as Note);
+            const createdNote = await this.notesService.create({ title, description,user_id:req.user?._id } as Note);
             res.status(201).json(createdNote);
         } catch (err:any) {
             next(err)
@@ -37,8 +42,33 @@ class NoteController implements Controller{
 
     private fetchAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
         try {
-            const fetchedNotes = await this.notesService.fetchAllNotes();
+            const fetchedNotes = await this.notesService.fetchAllNotes(req.user?._id);
             res.status(201).json(fetchedNotes);
+        } catch (err: any)
+        {
+            next(err);
+        }
+    }
+
+    private delete = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+        const id = req.params.id;
+        console.log({id});
+        
+        try {
+            const deletedNote = await this.notesService.deleteNote(id);
+            res.status(201).json(deletedNote);
+        } catch (err: any)
+        {
+            next(err);
+        }
+    }
+
+    private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+        const id = req.params.id;
+        
+        try {
+            const updatedNote = await this.notesService.updateNote(id,req.body);
+            res.status(201).json(updatedNote);
         } catch (err: any)
         {
             next(err);
