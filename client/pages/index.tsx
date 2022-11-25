@@ -1,9 +1,23 @@
 import Head from "next/head";
+import { useState } from "react";
 import MainContent from "../components/main-content/MainContent";
 import NoteCard from "../components/NoteCard";
 import Sidebar from "../components/sidebar/Sidebar";
+import { Note } from "../utils/types";
 
 export default function Home() {
+  const testNotes: Note[] = [
+    { title: "title1", description: "description", id: "1" },
+    { title: "title2", description: "description", id: "2" },
+    { title: "title3", description: "description", id: "3" },
+  ];
+
+  const [currentNoteId, setCurrentNoteId] = useState<null | string>(null);
+
+  function onSelectNote(id: string) {
+    setCurrentNoteId(id);
+  }
+
   return (
     <div>
       <Head>
@@ -16,7 +30,11 @@ export default function Home() {
 
       {/* Body */}
       <div className="flex">
-        <Sidebar />
+        <Sidebar
+          allNotes={testNotes}
+          onSelectNote={onSelectNote}
+          currentNoteId={currentNoteId}
+        />
         <MainContent />
       </div>
       {/* Footer */}
