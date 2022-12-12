@@ -50,7 +50,10 @@ function initializeDBConnection(): void{
     })
 }
 
-function initializeControllers(controllers : Controller[]): void{
+function initializeControllers(controllers: Controller[]): void{
+    app.get("/", () => {
+        console.log("Welcome to DNotebook DB");
+    })
     controllers.forEach((controller:Controller) => {
         app.use('/api', controller.router);
     })
