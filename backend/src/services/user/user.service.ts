@@ -13,6 +13,12 @@ class UserService{
         console.log(user);
         
         try {
+            const findUser = await UserModel.findOne({ email: user.email });
+            console.log({ findUser });
+            if (findUser)
+            {
+                throw new HttpException(400, "User already exist");
+            }
             const createdUser = await UserModel.create(user);
             console.log("🚀 ~ file: user.service.ts ~ line 14 ~ UserService ~ register=async ~ createdUser", createdUser)
             
@@ -20,10 +26,10 @@ class UserService{
             const accessToken = TokenService.createToken(payload as TokenPayload);
 
             return { token: accessToken } as AuthResponse;
-        } catch (err) {
+        } catch (err:any) {
             console.log(err);
             
-            throw new HttpException(400, "Unable to create new user");
+            throw new HttpException(400, err.message);
         }
     }
 

@@ -5,18 +5,20 @@ import HttpException from "../../utils/exceptions/http.exception";
 class NotesService{
     
     public async create(note: Note): Promise<Note> {
-       
+        // console.log({note});
         try {
             const createdNote = await NoteModel.create(note);
             return createdNote;
-        } catch(error) {
+        } catch (error) {
+            console.log(error);
             throw new HttpException(400, "Couldn't create note");
         }
     }
 
     public async fetchAllNotes(user_id:string): Promise<Array<Note>>{
         try {
-            const notes = await NoteModel.find({user_id});
+            const notes = await NoteModel.find({ user_id });
+            notes.reverse();
             return notes;
         } catch (error)
         {
@@ -33,7 +35,8 @@ class NotesService{
         }
     }
 
-    public async updateNote(id:string,note:Note): Promise<Note|null>{
+    public async updateNote(id: string, note: Note): Promise<Note | null>{
+        console.log(note);
         try {
             const updatedNote = await NoteModel.findOneAndUpdate({_id:id},note,{new:true});
             return updatedNote;

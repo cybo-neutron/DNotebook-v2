@@ -6,24 +6,30 @@ import HttpException from "../utils/exceptions/http.exception";
 import TokenService from "../utils/TokenService";
 
 async function authenticateMiddleware(req: Request, res: Response, next: NextFunction) {
-    
+    console.log("authenticateMiddleware headers : ",req.headers);
 // read the header and loook for bearer token
     const bearer = req.headers.authorization;
     if (bearer && bearer.startsWith('Bearer ')) {
         // if found verify the token
         const token = bearer.split(' ')[1];
-        const decoded: Token | jwt.JsonWebTokenError = TokenService.verifyToken(token);
+        try {
+            const decoded: Token | jwt.JsonWebTokenError = TokenService.verifyToken(token);
         
-        if (decoded instanceof jwt.JsonWebTokenError) {
-            return next(new HttpException(401, "Unauthorized token"));
-        }
-        const user = await userModel.findById(decoded.user_id).select('-password').exec();
+            if (decoded instanceof jwt.JsonWebTokenError) {
+                return next(new HttpException(401, "Unauthorized token"));
+            }
+            const user = await userModel.findById(decoded.user_id).select('-password').exec();
 
-        if (!user)
-            return next(new HttpException(401, "Unauthorized"));
+            if (!user)
+                return next(new HttpException(401, "Unauthorized"));
+            
+            req.user = user;
+            return next();
+        } catch (err: any)
+        {
+            return next(new HttpException(401,"Invalid token"))
+        }
         
-        req.user = user;
-        return next();
 
     } else {
         // if bearer token not found -> authentication failed

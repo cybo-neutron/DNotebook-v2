@@ -31,7 +31,7 @@ class NoteController implements Controller{
         
         try {
             const { title, description } = req.body;
-            console.log("🚀 ~ file: note.controller.ts ~ line 29 ~ NoteController ~ create ~ req.body", req.body)
+            // console.log("🚀 ~ file: note.controller.ts ~ line 29 ~ NoteController ~ create ~ req.body", req.body)
             
             const createdNote = await this.notesService.create({ title, description,user_id:req.user?._id } as Note);
             res.status(201).json(createdNote);
@@ -65,7 +65,7 @@ class NoteController implements Controller{
 
     private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
         const id = req.params.id;
-        
+        console.log(req.body);
         try {
             const updatedNote = await this.notesService.updateNote(id,req.body);
             res.status(201).json(updatedNote);
